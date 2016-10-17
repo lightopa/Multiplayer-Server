@@ -1,5 +1,11 @@
-import flask
-import os
+import sys
+try:
+    import flask
+except ImportError:
+    sys.path.append("lib")
+    import flask
+
+import os  
 import pickle
 import random
 import json
