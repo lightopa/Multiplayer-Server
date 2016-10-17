@@ -1,0 +1,13 @@
+/__init__.pyc
+/_compat.pyc
+/_unicodefun.pyc
+/_winconsole.pyc
+/core.pyc
+/decorators.pyc
+/exceptions.pyc
+/formatting.pyc
+/globals.pyc
+/parser.pyc
+/termui.pyc
+/types.pyc
+/utils.pyc

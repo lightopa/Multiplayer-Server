@@ -1,0 +1,17 @@
+/__init__.pyc
+/_compat.pyc
+/bccache.pyc
+/compiler.pyc
+/defaults.pyc
+/environment.pyc
+/exceptions.pyc
+/filters.pyc
+/lexer.pyc
+/loaders.pyc
+/nodes.pyc
+/optimizer.pyc
+/parser.pyc
+/runtime.pyc
+/tests.pyc
+/utils.pyc
+/visitor.pyc
