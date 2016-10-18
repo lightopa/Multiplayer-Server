@@ -1,0 +1,11 @@
+{"cards": [
+    {"name": "soldier", 
+    "attack": 1, 
+    "health": 2, 
+    "speed": 1, 
+    "description": "An obidient piece of canon fodder",
+    "type": "minion",
+    "cost": 1}
+    ]
+
+}

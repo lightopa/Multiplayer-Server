@@ -114,7 +114,17 @@ def checkQueue():
             if user.timeout():
                 del dic["queue"][k]
     return str(out)
-                
+
+@app.route("/get_cards/")
+def getCards():
+    with open("cards.json", "r") as j:
+        cards = json.load(j)
+    return json.dumps(cards)
+
+@app.route("/check/")
+def chechServer():
+    return "online"
+
 
 def checkDatabase():
     print("check database")
