@@ -117,7 +117,7 @@ def checkQueue():
 
 @app.route("/get_cards/")
 def getCards():
-    with open("cards.json", "r") as j:
+    with open(os.path.join(os.path.dirname(__file__), "cards.json"), "r") as j:
         cards = json.load(j)
     return json.dumps(cards)
 
