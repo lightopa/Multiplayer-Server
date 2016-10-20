@@ -70,6 +70,12 @@ def connect():
                 break
     return str({"key": key, "unid": unid})
 
+@app.route('/leave_queue/', methods=['GET', 'POST'])
+def leaveQueue():
+    unid = data()["unid"]
+    with database() as dic:
+        if unid in dic["queue"].keys():
+            del dic["queue"][unid]
 
 @app.route('/database/')
 def get_data():
@@ -83,6 +89,9 @@ def checkQueue():
         if unid in dic["queue"].keys():
             user = dic["queue"][unid]
             user.ping()
+            for k, user in dic["queue"].items():
+                if user.timeout():
+                    del dic["queue"][k]
             if len(dic["queue"].keys()) >= 2:
                 g = 0
                 while True:
@@ -110,9 +119,6 @@ def checkQueue():
                 if unid in v["players"].keys() and v["state"] == "connecting":
                     out = [True, k]
         
-        for k, user in dic["queue"].items():
-            if user.timeout():
-                del dic["queue"][k]
     return str(out)
 
 @app.route("/get_cards/")
