@@ -32,6 +32,8 @@ class database:
             self.dab["games"] = {}
         if not "queue" in self.dab:
             self.dab["queue"] = {}
+        if not "lastUNID" in self.dab:
+            self.dab["lastUNID"] = 0
 
 class User:
     def __init__(self, unid):
@@ -44,9 +46,9 @@ class User:
     def __str__(self):
         return "_U_" + str(self.unid)
     
-    def timeout(self):
+    def timeout(self, t=10):
         diff = time.time() - self.lastPing
-        if diff > 10:
+        if diff > t:
             return True
         else:
             return False
@@ -60,11 +62,12 @@ def connect():
     print(data())
     key = data()["key"]
     with database() as dic:
-        unid = 0
+        unid = dic["lastUNID"]
         while True:
             unid += 1
             if not unid in dic["queue"].keys():
                 u = User(unid)
+                dic["lastUNID"] = unid
                 print("create user", unid)
                 dic["queue"][unid] = u
                 break
@@ -74,7 +77,7 @@ def connect():
 def leaveQueue():
     unid = data()["unid"]
     with database() as dic:
-        if unid in dic["queue"].keys():
+        if unid in list(dic["queue"].keys()):
             del dic["queue"][unid]
 
 @app.route('/database/')
@@ -82,15 +85,15 @@ def get_data():
     with database() as dic:
         return str(dic)
     
-@app.route('/check_queue/', methods=['GET', 'POST'])
+@app.route('/check_queue/', methods=['POST'])
 def checkQueue():
     unid = data()["unid"]
     with database() as dic:
         if unid in dic["queue"].keys():
             user = dic["queue"][unid]
             user.ping()
-            for k, user in dic["queue"].items():
-                if user.timeout():
+            for k in list(dic["queue"].keys()):
+                if dic["queue"][k].timeout(t=2):
                     del dic["queue"][k]
             if len(dic["queue"].keys()) >= 2:
                 g = 0
@@ -121,6 +124,31 @@ def checkQueue():
         
     return str(out)
 
+@app.route("/game_loop/", methods=['POST'])
+def gameLoop():
+    dat = data()
+    unid = dat['unid']
+    type = dat['type']
+    
+@app.route("/game_start/", methods=['POST'])
+def gameStart():
+    dat = data()
+    unid = dat['unid']
+    game = dat["game"]
+    with database() as dic:
+        game = dic["games"][game]
+        game["players"][unid].ping()
+        if game["state"] == "connecting":
+            game["starter"] = random.choice(list(game["players"].keys()))
+            game["turn"] = {"player": game["starter"], "time": time.time()}
+            game["state"] = "connecting2"
+        if game["state"] == "connecting2":
+            game["state"] = "playing"
+        out = {"starter": game["starter"], "turn": game["turn"]}
+    return str(out)
+        
+
+
 @app.route("/get_cards/")
 def getCards():
     with open(os.path.join(os.path.dirname(__file__), "cards.json"), "r") as j:
@@ -134,24 +162,12 @@ def chechServer():
 
 def checkDatabase():
     print("check database")
-    
     dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data"))
     if not os.path.exists(dir):
         os.makedirs(dir)
     if not os.path.exists(dab):
         with open(dab, 'wb') as f:
             pass
-        
-    """try:
-        with open(dab, 'rb') as f:
-            pass
-    except FileNotFoundError:
-        print("FILE NOT FOUND")
-        dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data"))
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        with open(dab, 'wb') as f:
-            pass"""
     try:
         with open(dab, 'rb') as f: 
             pickle.load(f)
