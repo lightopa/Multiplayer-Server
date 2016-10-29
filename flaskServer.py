@@ -128,7 +128,26 @@ def checkQueue():
 def gameLoop():
     dat = data()
     unid = dat['unid']
+    game = dat["game"]
     type = dat['type']
+    with database() as dic:
+        game = dic["games"][game]
+        game["players"][unid].ping()
+        if type == "update":
+            events = dat["events"]
+            for event in events:
+                if event["type"] == "place":
+                    pos = event["position"]
+                    id = event["id"]
+                    game["board"][pos[1]][pos[0]] = id
+                    game["events"].append(event)
+            return "done"
+        if type == "fetch":
+            events = [e for e in game["events"] if e["type"] == "place"]
+            out = {"events": events}
+            game["events"] = [e for e in game["events"] if not e in events]
+            return str(out)
+        
     
 @app.route("/game_start/", methods=['POST'])
 def gameStart():
@@ -142,6 +161,10 @@ def gameStart():
             game["starter"] = random.choice(list(game["players"].keys()))
             game["turn"] = {"player": game["starter"], "time": time.time()}
             game["state"] = "connecting2"
+            game["board"] = [[{}, {}, {}, {}],
+                             [{}, {}, {}, {}],
+                             [{}, {}, {}, {}]]
+            game["events"] = []
         if game["state"] == "connecting2":
             game["state"] = "playing"
         out = {"starter": game["starter"], "turn": game["turn"]}
