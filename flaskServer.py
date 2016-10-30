@@ -140,13 +140,21 @@ def gameLoop():
                     pos = event["position"]
                     id = event["id"]
                     game["board"][pos[1]][pos[0]] = id
+                    event["got"] = [unid]
                     game["events"].append(event)
-            return "done"
-        if type == "fetch":
-            events = [e for e in game["events"] if e["type"] == "place"]
-            out = {"events": events}
-            game["events"] = [e for e in game["events"] if not e in events]
-            return str(out)
+                if event["type"] == "turn":
+                    for player in game["players"].keys():
+                        if player != unid:
+                            game["turn"] = {"player": player, "time": time.time()}
+                    game["events"].append({"type": "turn", "turn": game["turn"], "got": []})
+        #if type == "fetch":
+        events = [e for e in game["events"] if not unid in e["got"]]
+        for event in game["events"]:
+            event["got"].append(unid)
+        #events = game["events"]
+        out = {"events": events}
+        game["events"] = [e for e in game["events"] if not len(e["got"]) >= 2]
+        return str(out)
         
     
 @app.route("/game_start/", methods=['POST'])
