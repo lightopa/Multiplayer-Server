@@ -11,6 +11,7 @@ import random
 import json
 import ast
 import time
+
 app = flask.Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
@@ -59,7 +60,6 @@ def data():
 
 @app.route('/connect/', methods=['GET', 'POST'])
 def connect():
-    print(data())
     key = data()["key"]
     with database() as dic:
         unid = dic["lastUNID"]
@@ -68,7 +68,6 @@ def connect():
             if not unid in dic["queue"].keys():
                 u = User(unid)
                 dic["lastUNID"] = unid
-                print("create user", unid)
                 dic["queue"][unid] = u
                 break
     return str({"key": key, "unid": unid})
@@ -111,7 +110,6 @@ def checkQueue():
                 
                 p2 = dic["queue"][list(dic["queue"])[0]]
                 del dic["queue"][list(dic["queue"])[0]]
-                print("NEW GAME", unid, p2.unid)
                 game["players"][p2.unid] = p2
                 out = [True ,"g" + str(g)]
             else:
@@ -147,11 +145,11 @@ def gameLoop():
                         if player != unid:
                             game["turn"] = {"player": player, "time": time.time()}
                     game["events"].append({"type": "turn", "turn": game["turn"], "got": []})
-        #if type == "fetch":
+        
         events = [e for e in game["events"] if not unid in e["got"]]
         for event in game["events"]:
-            event["got"].append(unid)
-        #events = game["events"]
+            if not unid in event["got"]:
+                event["got"].append(unid)
         out = {"events": events}
         game["events"] = [e for e in game["events"] if not len(e["got"]) >= 2]
         return str(out)
@@ -190,9 +188,7 @@ def getCards():
 def chechServer():
     return "online"
 
-
 def checkDatabase():
-    print("check database")
     dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data"))
     if not os.path.exists(dir):
         os.makedirs(dir)
