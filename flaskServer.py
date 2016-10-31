@@ -137,7 +137,19 @@ def gameLoop():
                 if event["type"] == "place":
                     pos = event["position"]
                     id = event["id"]
-                    game["board"][pos[1]][pos[0]] = id
+                    cunid = event["unid"]
+                    game["board"][pos[1]][pos[0]] = {"id": id, "unid": cunid, "player": unid}
+                    event["got"] = [unid]
+                    game["events"].append(event)
+                if event["type"] == "move":
+                    pos = event["position"]
+                    cunid = event["unid"]
+                    for y in range(len(game["board"])):
+                        for x in range(len(game["board"][y])):
+                            if game["board"][y][x].get("unid") == cunid:
+                                card = game["board"][y][x]
+                                game["board"][y][x] = {}
+                    game["board"][pos[1]][pos[0]] = card
                     event["got"] = [unid]
                     game["events"].append(event)
                 if event["type"] == "turn":
@@ -173,7 +185,10 @@ def gameStart():
             game["events"] = []
         if game["state"] == "connecting2":
             game["state"] = "playing"
-        out = {"starter": game["starter"], "turn": game["turn"]}
+        for p in game["players"].keys():
+            if p != unid:
+                opUnid = p
+        out = {"starter": game["starter"], "turn": game["turn"], "opponent": opUnid}
     return str(out)
         
 
