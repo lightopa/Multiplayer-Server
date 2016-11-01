@@ -11,15 +11,19 @@ import random
 import json
 import ast
 import time
+import filelock
 
 app = flask.Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
 dab = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data/database.dab"))
+lockFile = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data/database.lock"))
 
 class database:
     def __enter__(self):
-        checkDatabase()
+        self.lock = filelock.FileLock(lockFile)
+        self.lock.acquire(None, 0.05)
+        self._checkFile()
         with open(dab, 'rb') as f:
             self.dab = pickle.load(f)
             self._checkStruct()
@@ -27,6 +31,7 @@ class database:
     def __exit__(self, type, value, traceback):
         with open(dab, 'wb') as f:
             pickle.dump(self.dab, f)
+        self.lock.release()
     
     def _checkStruct(self):
         if not "games" in self.dab:
@@ -35,6 +40,23 @@ class database:
             self.dab["queue"] = {}
         if not "lastUNID" in self.dab:
             self.dab["lastUNID"] = 0
+    
+    def _checkFile(self):
+        dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data"))
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        if not os.path.exists(dab):
+            with open(dab, 'wb') as f:
+                pass
+        try:
+            with open(dab, 'rb') as f: 
+                pickle.load(f)
+        except Exception as e:
+            print("Error")
+            print(e)
+            f.close()
+            with open(dab, 'wb') as f: 
+                pickle.dump({}, f)
 
 class User:
     def __init__(self, unid):
@@ -134,6 +156,7 @@ def gameLoop():
         if type == "update":
             events = dat["events"]
             for event in events:
+                #print("In Events", event)
                 if event["type"] == "place":
                     pos = event["position"]
                     id = event["id"]
@@ -159,6 +182,7 @@ def gameLoop():
                     game["events"].append({"type": "turn", "turn": game["turn"], "got": []})
         
         events = [e for e in game["events"] if not unid in e["got"]]
+        #print("out events", events)
         for event in game["events"]:
             if not unid in event["got"]:
                 event["got"].append(unid)
@@ -202,23 +226,6 @@ def getCards():
 @app.route("/check/")
 def chechServer():
     return "online"
-
-def checkDatabase():
-    dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data"))
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    if not os.path.exists(dab):
-        with open(dab, 'wb') as f:
-            pass
-    try:
-        with open(dab, 'rb') as f: 
-            pickle.load(f)
-    except Exception as e:
-        print("Error")
-        print(e)
-        f.close()
-        with open(dab, 'wb') as f: 
-            pickle.dump({}, f)
 
 if __name__ == '__main__':
     if os.path.exists(dab):
