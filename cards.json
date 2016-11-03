@@ -6,7 +6,34 @@
     "description": "An obidient piece of canon fodder",
     "type": "minion",
     "cost": 1,
-    "id": "soldier"}
+    "id": "soldier1"},
+    
+    {"name": "Uhrk", 
+    "attack": 2, 
+    "health": 5, 
+    "speed": 1, 
+    "description": "A large target to hide behind",
+    "type": "minion",
+    "cost": 3,
+    "id": "soldier2"},
+    
+    {"name": "Athikii Cavelry", 
+    "attack": 1, 
+    "health": 2, 
+    "speed": 3, 
+    "description": "Fast but fragile",
+    "type": "minion",
+    "cost": 3,
+    "id": "cavelry1"},
+    
+    {"name": "Elven Tower", 
+    "attack": 3, 
+    "health": 5, 
+    "speed": 0, 
+    "description": "A defensive structure for your archers to hide in",
+    "type": "minion",
+    "cost": 3,
+    "id": "tower1"}
     ]
 
 }
