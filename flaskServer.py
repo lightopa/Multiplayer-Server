@@ -158,21 +158,21 @@ def gameLoop():
             for event in events:
                 #print("In Events", event)
                 if event["type"] == "place":
-                    pos = event["position"]
-                    id = event["id"]
-                    cunid = event["unid"]
-                    game["board"][pos[1]][pos[0]] = {"id": id, "unid": cunid, "player": unid}
+                    #pos = event["position"]
+                    #id = event["id"]
+                    #cunid = event["unid"]
+                    #game["board"][pos[1]][pos[0]] = {"id": id, "unid": cunid, "player": unid}
                     event["got"] = [unid]
                     game["events"].append(event)
                 if event["type"] == "move":
-                    pos = event["position"]
-                    cunid = event["unid"]
-                    for y in range(len(game["board"])):
+                    #pos = event["position"]
+                    #cunid = event["unid"]
+                    """for y in range(len(game["board"])):
                         for x in range(len(game["board"][y])):
                             if game["board"][y][x].get("unid") == cunid:
                                 card = game["board"][y][x]
                                 game["board"][y][x] = {}
-                    game["board"][pos[1]][pos[0]] = card
+                    game["board"][pos[1]][pos[0]] = card"""
                     event["got"] = [unid]
                     game["events"].append(event)
                 if event["type"] == "turn":
