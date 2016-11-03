@@ -24,7 +24,7 @@
     "description": "Fast but fragile",
     "type": "minion",
     "cost": 3,
-    "id": "cavelry1"},
+    "id": "cavalry1"},
     
     {"name": "Elven Tower", 
     "attack": 3, 
