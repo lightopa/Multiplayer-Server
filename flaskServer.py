@@ -175,6 +175,9 @@ def gameLoop():
                     game["board"][pos[1]][pos[0]] = card"""
                     event["got"] = [unid]
                     game["events"].append(event)
+                if event["type"] == "damage":
+                    event["got"] = [unid]
+                    game["events"].append(event)
                 if event["type"] == "turn":
                     for player in game["players"].keys():
                         if player != unid:
