@@ -62,6 +62,7 @@ class User:
     def __init__(self, unid):
         self.unid = unid
         self.lastPing = time.time()
+        self.name = "no name"
     
     def ping(self):
         self.lastPing = time.time()
@@ -83,12 +84,14 @@ def data():
 @app.route('/connect/', methods=['GET', 'POST'])
 def connect():
     key = data()["key"]
+    name = data()["name"]
     with database() as dic:
         unid = dic["lastUNID"]
         while True:
             unid += 1
             if not unid in dic["queue"].keys():
                 u = User(unid)
+                u.name = name
                 dic["lastUNID"] = unid
                 dic["queue"][unid] = u
                 break
@@ -215,7 +218,8 @@ def gameStart():
         for p in game["players"].keys():
             if p != unid:
                 opUnid = p
-        out = {"starter": game["starter"], "turn": game["turn"], "opponent": opUnid}
+                opName = game["players"][opUnid].name
+        out = {"starter": game["starter"], "turn": game["turn"], "opponent": opUnid, "opName": opName}
     return str(out)
         
 
