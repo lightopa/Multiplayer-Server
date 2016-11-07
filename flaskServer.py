@@ -160,32 +160,14 @@ def gameLoop():
             events = dat["events"]
             for event in events:
                 #print("In Events", event)
-                if event["type"] == "place":
-                    #pos = event["position"]
-                    #id = event["id"]
-                    #cunid = event["unid"]
-                    #game["board"][pos[1]][pos[0]] = {"id": id, "unid": cunid, "player": unid}
-                    event["got"] = [unid]
-                    game["events"].append(event)
-                if event["type"] == "move":
-                    #pos = event["position"]
-                    #cunid = event["unid"]
-                    """for y in range(len(game["board"])):
-                        for x in range(len(game["board"][y])):
-                            if game["board"][y][x].get("unid") == cunid:
-                                card = game["board"][y][x]
-                                game["board"][y][x] = {}
-                    game["board"][pos[1]][pos[0]] = card"""
-                    event["got"] = [unid]
-                    game["events"].append(event)
-                if event["type"] == "damage":
-                    event["got"] = [unid]
-                    game["events"].append(event)
                 if event["type"] == "turn":
                     for player in game["players"].keys():
                         if player != unid:
                             game["turn"] = {"player": player, "time": time.time()}
                     game["events"].append({"type": "turn", "turn": game["turn"], "got": []})
+                else:
+                    event["got"] = [unid]
+                    game["events"].append(event)
         
         events = [e for e in game["events"] if not unid in e["got"]]
         #print("out events", events)
