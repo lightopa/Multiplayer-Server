@@ -37,6 +37,7 @@
     {"name": "Fire Ball",
     "type": "spell",
     "effects": {"damage": 1},
+    "description": "A fireball that deals 1 damage"
     "cost": 1,
     "id": "fireball"}
     ]
