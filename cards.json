@@ -33,7 +33,12 @@
     "description": "A defensive structure for your archers to hide in",
     "type": "minion",
     "cost": 3,
-    "id": "tower1"}
+    "id": "tower1"},
+    {"name": "Fire Ball",
+    "type": "spell",
+    "effects": {"damage": 1},
+    "cost": 1,
+    "id": "fireball"}
     ]
 
 }
