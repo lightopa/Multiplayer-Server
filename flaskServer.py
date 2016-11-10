@@ -191,9 +191,9 @@ def gameStart():
             game["starter"] = random.choice(list(game["players"].keys()))
             game["turn"] = {"player": game["starter"], "time": time.time()}
             game["state"] = "connecting2"
-            game["board"] = [[{}, {}, {}, {}],
+            """game["board"] = [[{}, {}, {}, {}],
                              [{}, {}, {}, {}],
-                             [{}, {}, {}, {}]]
+                             [{}, {}, {}, {}]]"""
             game["events"] = []
         if game["state"] == "connecting2":
             game["state"] = "playing"
