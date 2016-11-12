@@ -81,10 +81,19 @@ def data():
     out = ast.literal_eval(ast.literal_eval(flask.request.data.decode('ascii')))
     return out
 
+@app.route('/clean_db/')
+def cleanGames():
+    with database() as dic:
+        for key in list(dic["games"].keys()):
+            if dic["games"][key]["players"][list(dic["games"][key]["players"])[0]].timeout(50) and dic["games"][key]["players"][list(dic["games"][key]["players"])[0]].timeout(50):
+                dic["games"].pop(key)
+                print(key)
+
 @app.route('/connect/', methods=['GET', 'POST'])
 def connect():
     key = data()["key"]
     name = data()["name"]
+    cleanGames()
     with database() as dic:
         unid = dic["lastUNID"]
         while True:
@@ -151,10 +160,10 @@ def checkQueue():
 def gameLoop():
     dat = data()
     unid = dat['unid']
-    game = dat["game"]
+    gamen = dat["game"]
     type = dat['type']
     with database() as dic:
-        game = dic["games"][game]
+        game = dic["games"][gamen]
         game["players"][unid].ping()
         if type == "update":
             events = dat["events"]
@@ -169,13 +178,22 @@ def gameLoop():
                     event["got"] = [unid]
                     game["events"].append(event)
         
+        for i, player in game["players"].items():
+            if player.timeout():
+                game["events"].append({"type": "stop", "reason": "timeout", "got":[]})
+                game["state"] = "-stopping"
+        
         events = [e for e in game["events"] if not unid in e["got"]]
         #print("out events", events)
         for event in game["events"]:
             if not unid in event["got"]:
                 event["got"].append(unid)
-        out = {"events": events}
+        out = str({"events": events})
         game["events"] = [e for e in game["events"] if not len(e["got"]) >= 2]
+        if game["state"] == "-stopping":
+            game["state"] = "stopping"
+        elif game["state"] == "stopping":
+            dic["games"].pop(gamen)
         return str(out)
         
     
@@ -204,7 +222,18 @@ def gameStart():
         out = {"starter": game["starter"], "turn": game["turn"], "opponent": opUnid, "opName": opName}
     return str(out)
         
-
+@app.route("/game_leave/", methods=['POST'])
+def gameLeave():
+    dat = data()
+    unid = dat['unid']
+    game = dat["game"]
+    with database() as dic:
+        game = dic["games"][game]
+        game["players"][unid].ping()
+        game["events"].append({"type": "stop", "reason": "disconnect", "got":[unid]})
+        game["state"] = "stopping"
+        
+    return ""
 
 @app.route("/get_cards/")
 def getCards():
