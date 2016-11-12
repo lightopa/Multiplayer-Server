@@ -83,11 +83,13 @@ def data():
 
 @app.route('/clean_db/')
 def cleanGames():
+    i = 0
     with database() as dic:
         for key in list(dic["games"].keys()):
             if dic["games"][key]["players"][list(dic["games"][key]["players"])[0]].timeout(50) and dic["games"][key]["players"][list(dic["games"][key]["players"])[0]].timeout(50):
                 dic["games"].pop(key)
-                print(key)
+                i += 1
+    return "Removed " + str(i) + " dormant games"
 
 @app.route('/connect/', methods=['GET', 'POST'])
 def connect():
