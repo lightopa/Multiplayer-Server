@@ -91,7 +91,7 @@ def cleanGames():
                 i += 1
     return "Removed " + str(i) + " dormant games"
 
-@app.route('/connect/', methods=['GET', 'POST'])
+@app.route('/connect/', methods=['POST'])
 def connect():
     key = data()["key"]
     name = data()["name"]
@@ -108,7 +108,7 @@ def connect():
                 break
     return str({"key": key, "unid": unid})
 
-@app.route('/leave_queue/', methods=['GET', 'POST'])
+@app.route('/leave_queue/', methods=['POST'])
 def leaveQueue():
     unid = data()["unid"]
     with database() as dic:
