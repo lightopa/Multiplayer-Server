@@ -247,6 +247,10 @@ def getCards():
 def chechServer():
     return "online"
 
+@app.errorhandler(404)
+def wrong_method():
+    return "Sorry, only the game client is allowed to access this page.", 405
+
 if __name__ == '__main__':
     if os.path.exists(dab):
         os.remove(dab)
