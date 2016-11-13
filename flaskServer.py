@@ -247,7 +247,7 @@ def getCards():
 def chechServer():
     return "online"
 
-@app.errorhandler(404)
+@app.errorhandler(405)
 def wrong_method():
     return "Sorry, only the game client is allowed to access this page.", 405
 
