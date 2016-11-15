@@ -182,8 +182,8 @@ def gameLoop():
         
         for i, player in game["players"].items():
             if player.timeout():
-                game["events"].append({"type": "stop", "reason": "timeout", "got":[]})
-                game["state"] = "-stopping"
+                game["events"].append({"type": "stop", "reason": "timeout", "got":[i]})
+                game["state"] = "stopping"
         
         events = [e for e in game["events"] if not unid in e["got"]]
         #print("out events", events)
@@ -192,9 +192,9 @@ def gameLoop():
                 event["got"].append(unid)
         out = str({"events": events})
         game["events"] = [e for e in game["events"] if not len(e["got"]) >= 2]
-        if game["state"] == "-stopping":
-            game["state"] = "stopping"
-        elif game["state"] == "stopping":
+        #if game["state"] == "-stopping":
+        #    game["state"] = "stopping"
+        if game["state"] == "stopping":
             dic["games"].pop(gamen)
         return str(out)
         
