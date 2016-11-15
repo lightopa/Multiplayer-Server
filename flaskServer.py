@@ -12,9 +12,13 @@ import json
 import ast
 import time
 import filelock
+from raven.contrib.flask import Sentry
+
 
 app = flask.Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
+
+sentry = Sentry(app, dsn='https://329ae4b180194fda9f95a319665c8dca:5dda4cba0d1e43fc8e4acc1e8b314ffa@sentry.io/114781')
 
 dab = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data/database.dab"))
 lockFile = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data/database.lock"))
@@ -192,8 +196,6 @@ def gameLoop():
                 event["got"].append(unid)
         out = str({"events": events})
         game["events"] = [e for e in game["events"] if not len(e["got"]) >= 2]
-        #if game["state"] == "-stopping":
-        #    game["state"] = "stopping"
         if game["state"] == "stopping":
             dic["games"].pop(gamen)
         return str(out)

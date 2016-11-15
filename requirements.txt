@@ -1,1 +1,3 @@
 Flask
+raven
+raven[flask]
