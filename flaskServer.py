@@ -250,8 +250,8 @@ def chechServer():
     return "online"
 
 @app.errorhandler(405)
-def wrong_method():
-    return "Sorry, only the game client is allowed to access this page.", 405
+def wrong_method(e):
+    return "Sorry, only the game client is allowed to access this page.\n" + e, 405
 
 if __name__ == '__main__':
     if os.path.exists(dab):
