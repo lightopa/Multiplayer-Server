@@ -44,6 +44,8 @@ class database:
             self.dab["queue"] = {}
         if not "lastUNID" in self.dab:
             self.dab["lastUNID"] = 0
+        if not "accounts" in self.dab:
+            self.dab["accounts"] = {}
     
     def _checkFile(self):
         dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "data"))
@@ -111,6 +113,34 @@ def connect():
                 dic["queue"][unid] = u
                 break
     return str({"key": key, "unid": unid})
+
+@app.route('/register_account/', methods=['POST'])
+def register():
+    username = data()["username"]
+    password = data()["password"]
+    with database() as dic:
+        if not username in dic["accounts"]:
+            dic["accounts"][username] = {}
+            dic["accounts"][username]["pass"] = password
+            dic["accounts"][username]["stats"] = {"wins": 0,
+                                                  "loses": 0,
+                                                  }
+        else:
+            return str(False)
+    return str(True)
+
+@app.route('/login/', methods=['POST'])
+def login():
+    username = data()["username"]
+    password = data()["password"]
+    with database() as dic:
+        if not username in dic["accounts"]:
+            return "'username'"
+        else:
+            if dic["accounts"][username]["pass"] == password:
+                return str(True)
+            else:
+                return "'password'"
 
 @app.route('/leave_queue/', methods=['POST'])
 def leaveQueue():
