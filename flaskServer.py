@@ -154,8 +154,8 @@ def update():
             if dic["accounts"][username]["pass"] == password:
                 for k, v in update.items():
                     dic["accounts"][username]["stats"][k] += v
-                    return True
-    return False
+                    return str(True)
+    return str(False)
 
 @app.route('/get_account/', methods=['POST'])
 def getAccount():
@@ -171,6 +171,7 @@ def leaveQueue():
     with database() as dic:
         if unid in list(dic["queue"].keys()):
             del dic["queue"][unid]
+    return str(True)
 
 @app.route('/database/')
 def get_data():
