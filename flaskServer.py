@@ -123,7 +123,9 @@ def register():
             dic["accounts"][username] = {}
             dic["accounts"][username]["pass"] = password
             dic["accounts"][username]["stats"] = {"wins": 0,
-                                                  "loses": 0,
+                                                  "losses": 0,
+                                                  "xp": 0,
+                                                  "competitive": 1
                                                   }
         else:
             return str(False)
@@ -141,6 +143,27 @@ def login():
                 return str(True)
             else:
                 return "'password'"
+            
+@app.route('/update_account/', methods=['POST'])
+def update():
+    username = data()["username"]
+    password = data()["password"]
+    update = data()["update"]
+    with database() as dic:
+        if username in dic["accounts"]:
+            if dic["accounts"][username]["pass"] == password:
+                for k, v in update.items():
+                    dic["accounts"][username]["stats"][k] += v
+                    return True
+    return False
+
+@app.route('/get_account/', methods=['POST'])
+def getAccount():
+    username = data()["username"]
+    with database() as dic:
+        if username in dic["accounts"]:
+            return str(dic["accounts"][username]["stats"])
+    return str({})
 
 @app.route('/leave_queue/', methods=['POST'])
 def leaveQueue():
