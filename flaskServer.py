@@ -223,7 +223,7 @@ def gameLoop():
     gamen = dat["game"]
     type = dat['type']
     with database() as dic:
-        if not gamen in dic["games"].key():
+        if not gamen in dic["games"].keys():
             return {"type": "stop", "reason": "missing"}
         game = dic["games"][gamen]
         game["players"][unid].ping()
