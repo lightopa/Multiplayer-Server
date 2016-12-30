@@ -35,6 +35,15 @@
     "cost": 3,
     "id": "tower1"},
     
+    {"name": "Saldian Footman", 
+    "attack": 1, 
+    "health": 2, 
+    "speed": 2, 
+    "description": "An agile flanker",
+    "type": "minion",
+    "cost": 3,
+    "id": "soldier3"},
+    
     {"name": "Fire Ball",
     "type": "spell",
     "effects": {"damage": 1},
